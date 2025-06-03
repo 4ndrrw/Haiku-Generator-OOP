@@ -58,6 +58,9 @@ class HaikuGeneratorApp:
         self.handle_synonymize()
       elif choice == "2":
         self.handle_zenize()
+      elif choice == "3":
+        self.handle_antonymize()
+      
       # ... other options
       elif choice == "7":
         # Exit the application
@@ -178,6 +181,72 @@ class HaikuGeneratorApp:
         print(f"An error occurred: {str(e)}")
         input("Press Enter to continue...")
         retry = False
+
+  # Handle the Antonymize option (Option 3)
+  def handle_antonymize(self, haiku_file=None, synonym_thesaurus_file=None, antonym_thesaurus_file=None):
+    """Handle antonymize option"""
+    retry = True
+    while retry:
+      try:
+        # Prompt for haiku file if not provided
+        if haiku_file is None:
+          haiku_file = get_haiku_input()
+
+        # Prompt for synonym thesaurus file if not provided
+        if synonym_thesaurus_file is None:
+          synonym_thesaurus_file = get_valid_input(
+            "\nSelect a synonym thesaurus file.\nPlease enter input file: ",
+            validate_file_exists
+          )
+
+        # Prompt for antonym thesaurus file if not provided
+        if antonym_thesaurus_file is None:
+          antonym_thesaurus_file = get_valid_input(
+            "\nSelect an antonym thesaurus file.\nPlease enter input file: ",
+            validate_file_exists
+          )
+          input("\nPress Enter to continue...")
+
+        # Load haiku and thesaurus data
+        haiku = Haiku.from_file(haiku_file)
+        synonym_thesaurus = Thesaurus()
+        synonym_thesaurus.load_from_file(synonym_thesaurus_file)
+        antonym_thesaurus = Thesaurus()
+        antonym_thesaurus.load_from_file(antonym_thesaurus_file)
+
+        # Process haiku with antonyms
+        processor = Antonymizer(haiku, synonym_thesaurus, antonym_thesaurus)
+        processed = processor.process()
+
+        # Offer to save
+        self.handle_save_option(processed)
+
+        # Ask if user wants to regenerate with same input
+        retry_choice = get_valid_input(
+          "\nWould you like to regenerate? (y/n): ",
+          lambda x: x.lower() in ["y", "n"],
+          "Please enter 'y' or 'n'."
+        )
+
+        if retry_choice.lower() == "y":
+          retry = True
+        else:
+          retry = False
+          print("Press Enter to return to main menu...")
+
+      except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        input("Press Enter to continue...")
+        retry = False
+
+  # Handle the batch processing option (Option 4)
+  
+
+  # Handle the extra first feature options (Option 5)
+
+
+  # Handle the extra second feature options (Option 6)
+
 
   # Handle the save option for processed text
   def handle_save_option(self, processed_text):

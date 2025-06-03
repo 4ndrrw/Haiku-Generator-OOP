@@ -29,6 +29,11 @@ class Thesaurus:
     """Get entries (list of synonyms/antonyms) for a word (case insensitive)."""
     return self._data.get(word.lower(), [])
 
+
   def __contains__(self, word):
     """Overload 'in' operator to check if a word exists in the thesaurus."""
     return word.lower() in self._data
+  
+  def __iter__(self):
+    """Allow iteration over the keys in the thesaurus."""
+    return iter(self._data)

@@ -1,0 +1,10 @@
+last: first, tender, newest, fresh, young
+gust: stillness, silence, serenity, calmness, tranquility
+autumn: spring, springtime, march, april, may
+red: green, greenish, khaki, emerald, jade
+yellow: blue, azure, cobalt, skyblue, sapphire
+brown: teal, navy, silver, light, grey
+unite: separate, split, part, scatter, disperse
+carpet: roof, ceiling, crown, canopy, covering
+under: above, overhead, upstairs, atop, beyond
+trees: flowers, grass, creatures, fauna, wildlife
