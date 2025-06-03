@@ -1,0 +1,10 @@
+last: final, ultimate, latest, finishing, closing
+gust: breeze, puff, breath, blast, flurry
+autumn: fall, equinox, october, november, december
+red: crimson, rust, ochre, reddish, magenta
+yellow: tawny, gold, yellowish, pale, ashen
+brown: auburn, tan, brownish, bronze, swarthy
+unite: join, fuse, merge, blend, amalgamate
+carpet: rug, mat, layer, blanket, spread
+under: below, beneath, underneath, down, downunder
+trees: bushes, foliage, shrubs, plants, vegetation
