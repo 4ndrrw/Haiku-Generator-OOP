@@ -54,10 +54,10 @@ class Synonymizer(Processor):
   def display_results(self, original, processed_haiku):
       """Display before/after results"""
       print("\nThe Haiku before processing:")
-      print("-" * 20)
+      print("-" * 40)
       print(original)
       print("\nThe Synonymized Haiku after processing:")
-      print("-" * 20)
+      print("-" * 40)
       print(processed_haiku)
       print("\nPress Enter to continue...")
       input()
@@ -77,11 +77,23 @@ class Synonymizer(Processor):
     for i, line in enumerate(processed_haiku._lines):
         if line:
             processed_haiku._lines[i] = line.capitalize()
+
     self.display_results(original, processed_haiku)
     return processed_haiku
 
 # Zenizer class: replaces words with the shortest synonym
 class Zenizer(Processor):
+  def display_results(self, original, processed_haiku):
+      """Display before/after results"""
+      print("\nThe Haiku before processing:")
+      print("-" * 40)
+      print(original)
+      print("\nThe Zen-ized Haiku after processing:")
+      print("-" * 40)
+      print(processed_haiku)
+      print("\nPress Enter to continue...")
+      input()
+
   def process(self):
     original = str(self.haiku)
     processed_haiku = Haiku(*self.haiku._lines)
@@ -94,6 +106,11 @@ class Zenizer(Processor):
           sorted_syns = SortedList(synonyms, key=len)
           shortest = sorted_syns.get_shortest()
           processed_haiku.replace_word(word, shortest)
-
+    
+    # Capitalize the first letter of each line
+    for i, line in enumerate(processed_haiku._lines):
+        if line:
+            processed_haiku._lines[i] = line.capitalize()
+            
     self.display_results(original, processed_haiku)
     return processed_haiku

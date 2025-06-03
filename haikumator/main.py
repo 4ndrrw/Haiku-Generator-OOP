@@ -30,7 +30,8 @@ class HaikuGeneratorApp:
   def __init__(self):
     # Display welcome message on initialization
     self.display_welcome()
-    
+  
+  # Display welcome message with student information
   def display_welcome(self):
     # Print welcome banner and student info
     print('************************************************************')
@@ -46,6 +47,7 @@ class HaikuGeneratorApp:
     print()
     print('Press Enter, to continue...')
 
+  # Main application loop
   def run(self):
     """Main application loop"""
     while True:
@@ -61,21 +63,21 @@ class HaikuGeneratorApp:
         # Exit the application
         print("\nBye, thanks for using ST1507 DSAA: Haikumator")
         break
-        
+  
+  # Display the main menu and validate user input
   def display_main_menu(self):
     """Display and validate main menu choice"""
     # Wait for user to press Enter after welcome screen
     input()
-    menu_text = """
-Please select your choice: (1, 2, 3, 4, 5, 6, 7)
+    menu_text = """Please select your choice: (1, 2, 3, 4, 5, 6, 7)
 1. Synonymize Haiku
 2. Zen-ize Haiku
 3. Antonymize Haiku
 4. Batch Processing
 5. Extra Feature One (Haiku Validator)
 6. Extra Feature Two (Haiku Mixer)
-7. Exit
-"""
+7. Exit"""
+
     # Prompt user for menu choice and validate input
     return get_valid_input(
       menu_text + "\nEnter choice: ",
@@ -83,41 +85,105 @@ Please select your choice: (1, 2, 3, 4, 5, 6, 7)
       "Please enter a number between 1 and 7."
     )
 
-  def handle_synonymize(self):
+  # Handle the Synonymize option (Option 1)
+  def handle_synonymize(self, haiku_file=None, thesaurus_file=None):
     """Handle synonymize option"""
-    try:
-      # Prompt for haiku and thesaurus files
-      haiku_file = get_haiku_input()
-      thesaurus_file = get_valid_input(
-        "\nSelect a synonym thesaurus.\nPlease enter input file: ",
-        validate_file_exists
-      )
-      input("\nPress Enter to continue...")
-      
-      # Load haiku and thesaurus data
-      haiku = Haiku.from_file(haiku_file)
-      thesaurus = Thesaurus()
-      thesaurus.load_from_file(thesaurus_file)
-      
-      # Process haiku with synonyms
-      processor = Synonymizer(haiku, thesaurus)
-      processed = processor.process()
-      
-      # Offer to save and retry
-      self.handle_save_option(processed)
-      self.handle_retry_option(self.handle_synonymize)
-      
-    except Exception as e:
-      # Handle any errors gracefully
-      print(f"An error occurred: {str(e)}")
-      input("Press Enter to continue...")
+    retry = True
+    while retry:
+      try:
+        # Prompt for haiku and thesaurus files only on first run or if not provided
+        if haiku_file is None:
+          haiku_file = get_haiku_input()
+        
+        if thesaurus_file is None:
+          thesaurus_file = get_valid_input(
+            "\nSelect a synonym thesaurus.\nPlease enter input file: ",
+            validate_file_exists
+          )
+          input("\nPress Enter to continue...")
 
+        # Load haiku and thesaurus data
+        haiku = Haiku.from_file(haiku_file)
+        thesaurus = Thesaurus()
+        thesaurus.load_from_file(thesaurus_file)
+
+        # Process haiku with synonyms
+        processor = Synonymizer(haiku, thesaurus)
+        processed = processor.process()
+
+        # Offer to save
+        self.handle_save_option(processed)
+
+        # Ask if user wants to regenerate with same input
+        retry_choice = get_valid_input(
+          "\nWould you like to regenerate? (y/n): ",
+          lambda x: x.lower() in ["y", "n"],
+          "Please enter 'y' or 'n'."
+        )
+
+        if retry_choice.lower() == "y":
+          retry = True
+        else:
+          retry = False
+          print("Press Enter to return to main menu...")
+
+      except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        input("Press Enter to continue...")
+        retry = False
+
+  # Handle the Zen-ize option (Option 2)
+  def handle_zenize(self, haiku_file=None, thesaurus_file=None):
+    """Handle zen-ize option"""
+    retry = True
+    while retry:
+      try:
+        # Prompt for haiku file only on first run or if not provided
+        if haiku_file is None:
+          haiku_file = get_haiku_input()
+
+        if thesaurus_file is None:
+          thesaurus_file = get_valid_input(
+            "\nSelect a thesaurus file for Zen transformation.\nPlease enter input file: ",
+            validate_file_exists
+          )
+          input("\nPress Enter to continue...")
+
+        # Load haiku and thesaurus data
+        haiku = Haiku.from_file(haiku_file)
+        thesaurus = Thesaurus()
+        thesaurus.load_from_file(thesaurus_file)
+
+        # Process haiku with Zen transformation
+        processor = Zenizer(haiku, thesaurus)
+        processed = processor.process()
+
+        # Offer to save
+        self.handle_save_option(processed)
+
+        # Ask if user wants to regenerate with same input
+        retry_choice = get_valid_input(
+          "\nWould you like to regenerate? (y/n): ",
+          lambda x: x.lower() in ["y", "n"],
+          "Please enter 'y' or 'n'."
+        )
+
+        if retry_choice.lower() == "y":
+          retry = True
+        else:
+          retry = False
+          print("Press Enter to return to main menu...")
+
+      except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        input("Press Enter to continue...")
+        retry = False
+
+  # Handle the save option for processed text
   def handle_save_option(self, processed_text):
     """Offer the user to save the processed text to a file."""
-    print("\nProcessed Result:\n")
-    print(processed_text)
     save_choice = get_valid_input(
-      "\nWould you like to save the result to a file? (y/n): ",
+      "Would you like to save the result to a file? (y/n): ",
       lambda x: x.lower() in ["y", "n"],
       "Please enter 'y' or 'n'."
     )
@@ -132,18 +198,7 @@ Please select your choice: (1, 2, 3, 4, 5, 6, 7)
     else:
       print("Result not saved.")
 
-  def handle_retry_option(self, retry_func):
-    """Ask the user if they want to retry the operation."""
-    retry_choice = get_valid_input(
-      "\nWould you like to give this another try? (y/n): ",
-      lambda x: x.lower() in ["y", "n"],
-      "Please enter 'y' or 'n'."
-    )
-    if retry_choice.lower() == "y":
-      retry_func()
-    else:
-      print("Returning to main menu...")
-
+# Start the application if this script is run directly
 if __name__ == "__main__":
   # Start the application
   app = HaikuGeneratorApp()
