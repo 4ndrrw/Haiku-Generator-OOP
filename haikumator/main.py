@@ -19,11 +19,14 @@ For each menu option, the application follows a similar workflow:
   - Allow the user to repeat the process if desired.
 """
 
-import os
-import random
+# Import necessary modules
 from haiku import Haiku
 from thesaurus import Thesaurus
-from processor import Synonymizer, Zenizer, Antonymizer, BatchProcessor, SeasonDetector
+from synonymizer import Synonymizer
+from zenizer import Zenizer
+from antonymizer import Antonymizer
+from batchProcessor import BatchProcessor
+from seasonDetector import SeasonDetector
 from utils import get_valid_input, validate_choice, validate_file_exists, get_haiku_input
 
 class HaikuGeneratorApp:
@@ -91,7 +94,7 @@ class HaikuGeneratorApp:
     return get_valid_input(
       menu_text + "\nEnter choice: ",
       lambda x: validate_choice(x, ["1", "2", "3", "4", "5", "6", "7"]),
-      "Please enter a number between 1 and 7."
+      "\nPlease enter a number between 1 and 7."
     )
 
   # Handle the Synonymize option (Option 1)
@@ -249,67 +252,67 @@ class HaikuGeneratorApp:
   def handle_batch_processing(self):
     """Handle batch processing option"""
     try:
-        haiku_file = get_valid_input(
-            "\nSelect the Haiku you want to process\nPlease enter input file: ",
-            validate_file_exists,
-            "File not found. Please enter a valid filename."
-        )
+      haiku_file = get_valid_input(
+        "\nSelect the Haiku you want to process\nPlease enter input file: ",
+        validate_file_exists,
+        "File not found. Please enter a valid filename."
+      )
 
-        thesaurus_file = get_valid_input(
-            "\nSelect a synonym thesaurus.\nPlease enter input file: ",
-            validate_file_exists,
-            "File not found. Please enter a valid filename."
-        )
+      thesaurus_file = get_valid_input(
+        "\nSelect a synonym thesaurus.\nPlease enter input file: ",
+        validate_file_exists,
+        "File not found. Please enter a valid filename."
+      )
 
-        haiku = Haiku.from_file(haiku_file)
-        thesaurus = Thesaurus()
-        thesaurus.load_from_file(thesaurus_file)
+      haiku = Haiku.from_file(haiku_file)
+      thesaurus = Thesaurus()
+      thesaurus.load_from_file(thesaurus_file)
 
-        processor = BatchProcessor(haiku, thesaurus)
-        processor.process()
-        
+      processor = BatchProcessor(haiku, thesaurus)
+      processor.process()
+      
     except Exception as e:
-        print(f"\nError during batch processing: {str(e)}")
-        input("\nPress Enter to continue...")
+      print(f"\nError during batch processing: {str(e)}")
+      input("\nPress Enter to continue...")
 
   # Handle the season detection option (Option 5)
   def handle_season_detection(self):
     """Handle season detection option"""
     try:
-        print("\n" + "="*50)
-        print("Season Detection")
-        print("="*50)
-        
-        haiku_file = get_valid_input(
-            "Select the Haiku to analyze\nPlease enter input file: ",
-            validate_file_exists,
-            "File not found. Please enter a valid filename."
-        )
-        
-        haiku = Haiku.from_file(haiku_file)
-        detector = SeasonDetector(haiku)
-        season = detector.detect_season()
-        
-        print("\n=== Analysis Results ===")
-        print(f"Haiku:\n{haiku}\n")
-        print(detector.get_detailed_report())
-        
-        if season:
-            print(f"\nThis haiku strongly suggests {season}.")
-            if season in ['spring', 'autumn']:
-                print("Traditional haiku often focus on these seasons.")
-        else:
-            print("\nNo clear seasonal theme detected.")
-            print("This may be a 'seasonless' (muki) haiku.")
-        
-        print("\nPress Enter to continue...")
-        
+      print("\n" + "="*50)
+      print("Season Detection")
+      print("="*50)
+      
+      haiku_file = get_valid_input(
+        "Select the Haiku to analyze\nPlease enter input file: ",
+        validate_file_exists,
+        "File not found. Please enter a valid filename."
+      )
+      
+      haiku = Haiku.from_file(haiku_file)
+      detector = SeasonDetector(haiku)
+      season = detector.detect_season()
+      
+      print("\n=== Analysis Results ===")
+      print(f"Haiku:\n{haiku}\n")
+      print(detector.get_detailed_report())
+      
+      if season:
+        print(f"\nThis haiku strongly suggests {season}.")
+        if season in ['spring', 'autumn']:
+          print("Traditional haiku often focus on these seasons.")
+      else:
+        print("\nNo clear seasonal theme detected.")
+        print("This may be a 'seasonless' (muki) haiku.")
+      
+      print("\nPress Enter to continue...")
+      
     except Exception as e:
-        print(f"\nError during analysis: {str(e)}")
-        input("Press Enter to continue...")
+      print(f"\nError during analysis: {str(e)}")
+      input("Press Enter to continue...")
 
   # Handle the extra second feature options (Option 6)
-
+  
 
   # Handle the save option for processed text
   def handle_save_option(self, processed_text):

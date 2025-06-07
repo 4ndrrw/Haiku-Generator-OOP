@@ -1,3 +1,4 @@
+# SortedList class for maintaining a sorted list of items
 class SortedList:
   def __init__(self, iterable=None, key=None):
     # Initialize the sorted list and optional key function
