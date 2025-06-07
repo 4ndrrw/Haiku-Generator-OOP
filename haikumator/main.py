@@ -23,8 +23,8 @@ import os
 import random
 from haiku import Haiku
 from thesaurus import Thesaurus
-from processor import Synonymizer, Zenizer, Antonymizer
-from utils import get_valid_input, validate_choice, validate_file_exists, get_haiku_input
+from processor import Synonymizer, Zenizer, Antonymizer, BatchProcessor
+from utils import get_valid_input, validate_choice, validate_file_exists, validate_folder_exists, get_haiku_input
 
 class HaikuGeneratorApp:
   def __init__(self):
@@ -60,7 +60,9 @@ class HaikuGeneratorApp:
         self.handle_zenize()
       elif choice == "3":
         self.handle_antonymize()
-      
+      elif choice == "4":
+        self.handle_batch_processing()
+
       # ... other options
       elif choice == "7":
         # Exit the application
@@ -147,7 +149,7 @@ class HaikuGeneratorApp:
 
         if thesaurus_file is None:
           thesaurus_file = get_valid_input(
-            "\nSelect a thesaurus file for Zen transformation.\nPlease enter input file: ",
+            "\nSelect a synonym thesaurus file for Zen transformation.\nPlease enter input file: ",
             validate_file_exists
           )
           input("\nPress Enter to continue...")
@@ -240,7 +242,31 @@ class HaikuGeneratorApp:
         retry = False
 
   # Handle the batch processing option (Option 4)
-  
+  def handle_batch_processing(self):
+    """Handle batch processing option"""
+    try:
+        haiku_file = get_valid_input(
+            "\nSelect the Haiku you want to process\nPlease enter input file: ",
+            validate_file_exists,
+            "File not found. Please enter a valid filename."
+        )
+
+        thesaurus_file = get_valid_input(
+            "\nSelect a synonym thesaurus.\nPlease enter input file: ",
+            validate_file_exists,
+            "File not found. Please enter a valid filename."
+        )
+
+        haiku = Haiku.from_file(haiku_file)
+        thesaurus = Thesaurus()
+        thesaurus.load_from_file(thesaurus_file)
+
+        processor = BatchProcessor(haiku, thesaurus)
+        processor.process()
+        
+    except Exception as e:
+        print(f"\nError during batch processing: {str(e)}")
+        input("\nPress Enter to continue...")
 
   # Handle the extra first feature options (Option 5)
 

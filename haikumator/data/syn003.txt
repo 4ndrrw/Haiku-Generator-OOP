@@ -1,0 +1,3 @@
+cats: felines, kittens
+basking: lying, relaxing, idling
+lit: hit, reach

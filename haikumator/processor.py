@@ -7,6 +7,8 @@
 # BatchProcessor (inherits from Processor)
 
 import random
+import os
+from itertools import product
 from abc import ABC, abstractmethod
 from haiku import Haiku
 from thesaurus import Thesaurus
@@ -107,40 +109,93 @@ class Antonymizer(Processor):
     print("\nPress Enter to continue...")
     input()
 
-  def process(self):
-    original = str(self.haiku)
-    processed_haiku = Haiku(*self.haiku._lines)          # clone
-
-    # ---------- build a map that points every synonym (and the key itself) ➜ canonical key
+  def _build_reverse_syn_map(self):
     reverse_syn = {}
     for key in self.synonym_thesaurus:
         reverse_syn[key.lower()] = key                   # map the key to itself
         for val in self.synonym_thesaurus.get_entries(key):
             reverse_syn[val.lower()] = key
+    return reverse_syn
 
-    # ---------- replace each word with a random antonym (via the canonical key)
+  def _find_antonyms(self, word, reverse_syn):
+    canonical = reverse_syn.get(word.lower(), word)
+    antonyms = self.antonym_thesaurus.get_entries(canonical)
+    if not antonyms and canonical in self.synonym_thesaurus:
+        for syn in reversed(self.synonym_thesaurus.get_entries(canonical)):
+            antonyms = self.antonym_thesaurus.get_entries(syn)
+            if antonyms:
+                break
+    return antonyms
+
+  def process(self):
+    original = str(self.haiku)
+    processed_haiku = Haiku(*self.haiku._lines)          # clone
+
+    reverse_syn = self._build_reverse_syn_map()
+
     for word in processed_haiku.get_words():
-        canonical = reverse_syn.get(word.lower(), word)  # e.g. “final” ➜ “last”
-
-        # 1️⃣ direct antonyms of the canonical form
-        antonyms = self.antonym_thesaurus.get_entries(canonical)
-
-        # 2️⃣ if none, try antonyms of its synonyms (search in reverse order)
-        if not antonyms and canonical in self.synonym_thesaurus:
-            for syn in reversed(self.synonym_thesaurus.get_entries(canonical)):
-                antonyms = self.antonym_thesaurus.get_entries(syn)
-                if antonyms:
-                    break
-
-        # 3️⃣ perform the replacement (keep original casing)
+        antonyms = self._find_antonyms(word, reverse_syn)
         if antonyms:
             new_word = random.choice(antonyms)
             processed_haiku.replace_word(word, new_word)
 
-    # ---------- tidy up casing
     for i, line in enumerate(processed_haiku._lines):
         if line:
             processed_haiku._lines[i] = line.capitalize()
 
     self.display_results(original, processed_haiku)
     return processed_haiku
+  
+# BatchProcessor class: Create all possible alternatives of an existing haiku
+class BatchProcessor:
+    def __init__(self, haiku, thesaurus):
+        self.haiku = haiku
+        self.thesaurus = thesaurus
+        
+    def process(self):
+        """Generate all possible permutations of the haiku"""
+        # Get all replaceable words with their synonyms
+        replaceable_words = {}
+        for word in self.haiku.get_words():
+            if word in self.thesaurus:
+                synonyms = self.thesaurus.get_entries(word)
+                if synonyms:
+                    replaceable_words[word] = synonyms
+        
+        if not replaceable_words:
+            print("No replaceable words found in thesaurus.")
+            input("Press Enter to continue...")
+            return None
+        
+        # Get output folder
+        folder = input("\nSelect an existing folder to store the batch processed haikus\n"
+                      "Please enter the folder name: ").strip()
+        while not os.path.isdir(folder):
+            print("Folder not found. Please enter an existing directory.")
+            folder = input("Please enter the folder name: ").strip()
+        
+        input('\nPress Enter to start batch processing...\n')
+        print("\nBatch processing started!")
+        
+        # Generate all possible combinations
+        words = list(replaceable_words.keys())
+        synonym_lists = [replaceable_words[word] for word in words]
+        
+        # Process each combination
+        count = 0
+        for combo in product(*synonym_lists):
+            processed_haiku = Haiku(*self.haiku._lines)
+            for word, replacement in zip(words, combo):
+                processed_haiku.replace_word(word, replacement)
+            
+            # Save to file with v{number}.txt naming
+            filename = os.path.join(folder, f"v{count+1}.txt")
+            with open(filename, 'w') as f:
+                f.write(str(processed_haiku))
+            
+            print('.', end='', flush=True)
+            count += 1
+        
+        print(f"\nBatch processing completed with {count} permutations")
+        print("Press Enter to continue....")
+        return count

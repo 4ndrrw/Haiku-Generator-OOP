@@ -33,6 +33,18 @@ def validate_file_exists(filename):
   """
   return os.path.isfile(filename)
 
+def validate_folder_exists(foldername):
+  """
+  Check if a folder exists at the given path.
+
+  Args:
+    foldername (str): Path to the folder.
+
+  Returns:
+    bool: True if folder exists, False otherwise.
+  """
+  return os.path.isdir(foldername)
+
 def validate_choice(choice, valid_options):
   """
   Validate if the user's choice is within the allowed options.

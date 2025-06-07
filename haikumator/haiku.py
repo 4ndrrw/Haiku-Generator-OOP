@@ -5,36 +5,41 @@
 # Word counting functionality
 
 class Haiku:
-  def __init__(self, line1, line2, line3):
-    # Initialize the Haiku with three lines
-    self._lines = [line1, line2, line3]  # Encapsulated data
-
-  @classmethod
-  def from_file(cls, filename):
-    """Factory method to create Haiku from file"""
-    # Read the first three lines from a file and create a Haiku object
-    with open(filename, 'r') as f:
-      lines = [line.strip() for line in f.readlines()[:3]]
-    return cls(*lines)
-
-  def __str__(self):
-    # Return the haiku as a string with lines separated by newlines
-    return "\n".join(self._lines)
-
-  def __eq__(self, other):
-    # Compare two Haiku objects for equality based on their lines
-    return self._lines == other._lines
-
-  def replace_word(self, old_word, new_word):
-    """Replace all occurrences of a word in the haiku"""
-    # Replace old_word with new_word in all lines
-    self._lines = [line.replace(old_word, new_word) for line in self._lines]
-
-  def get_words(self):
-    """Get all words in the haiku"""
-    # Split all lines into words, stripping punctuation
-    words = []
-    for line in self._lines:
-      # Simple word splitting - may need enhancement
-      words.extend(word.strip(".,!?") for word in line.split())
-    return words
+    def __init__(self, line1="", line2="", line3=""):
+        self._lines = [line1, line2, line3]
+        
+    @classmethod
+    def from_file(cls, filename):
+        """Create Haiku from file"""
+        with open(filename, 'r') as f:
+            lines = [line.strip() for line in f.readlines()[:3]]
+        return cls(*lines)
+        
+    def __str__(self):
+        return "\n".join(self._lines)
+        
+    def replace_word(self, old_word, new_word):
+        """Replace words while preserving original case and punctuation"""
+        for i in range(len(self._lines)):
+            words = self._lines[i].split()
+            for j in range(len(words)):
+                # Compare without punctuation
+                clean_word = words[j].rstrip('.,!?;:').lower()
+                if clean_word == old_word.lower():
+                    # Preserve original capitalization and punctuation
+                    if words[j][0].isupper():
+                        new_word_cased = new_word.capitalize()
+                    else:
+                        new_word_cased = new_word.lower()
+                    
+                    # Preserve punctuation
+                    punctuation = words[j][len(clean_word):]
+                    words[j] = new_word_cased + punctuation
+            self._lines[i] = ' '.join(words)
+        
+    def get_words(self):
+        """Get all unique words in haiku (lowercase, no punctuation)"""
+        words = set()
+        for line in self._lines:
+            words.update(word.rstrip('.,!?;:').lower() for word in line.split())
+        return words
