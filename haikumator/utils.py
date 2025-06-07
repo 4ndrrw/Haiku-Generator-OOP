@@ -1,7 +1,6 @@
 import os
 
 # Input validation utilities
-
 def get_valid_input(prompt, validation_func, error_msg="Invalid input. Please try again."):
   """
   Prompt the user for input and validate it using the provided validation function.

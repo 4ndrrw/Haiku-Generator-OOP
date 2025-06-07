@@ -23,8 +23,8 @@ import os
 import random
 from haiku import Haiku
 from thesaurus import Thesaurus
-from processor import Synonymizer, Zenizer, Antonymizer, BatchProcessor
-from utils import get_valid_input, validate_choice, validate_file_exists, validate_folder_exists, get_haiku_input
+from processor import Synonymizer, Zenizer, Antonymizer, BatchProcessor, SeasonDetector
+from utils import get_valid_input, validate_choice, validate_file_exists, get_haiku_input
 
 class HaikuGeneratorApp:
   def __init__(self):
@@ -62,8 +62,12 @@ class HaikuGeneratorApp:
         self.handle_antonymize()
       elif choice == "4":
         self.handle_batch_processing()
-
-      # ... other options
+      elif choice == "5":
+        self.handle_season_detection()
+      elif choice == "6":
+        # Placeholder for extra feature two (Haiku Mixer)
+        print("\nFeature 6: Haiku Mixer is not yet implemented.")
+        input("Press Enter to return to main menu...")
       elif choice == "7":
         # Exit the application
         print("\nBye, thanks for using ST1507 DSAA: Haikumator")
@@ -79,7 +83,7 @@ class HaikuGeneratorApp:
 2. Zen-ize Haiku
 3. Antonymize Haiku
 4. Batch Processing
-5. Extra Feature One (Haiku Validator)
+5. Season Detector
 6. Extra Feature Two (Haiku Mixer)
 7. Exit"""
 
@@ -268,8 +272,41 @@ class HaikuGeneratorApp:
         print(f"\nError during batch processing: {str(e)}")
         input("\nPress Enter to continue...")
 
-  # Handle the extra first feature options (Option 5)
-
+  # Handle the season detection option (Option 5)
+  def handle_season_detection(self):
+    """Handle season detection option"""
+    try:
+        print("\n" + "="*50)
+        print("Season Detection")
+        print("="*50)
+        
+        haiku_file = get_valid_input(
+            "Select the Haiku to analyze\nPlease enter input file: ",
+            validate_file_exists,
+            "File not found. Please enter a valid filename."
+        )
+        
+        haiku = Haiku.from_file(haiku_file)
+        detector = SeasonDetector(haiku)
+        season = detector.detect_season()
+        
+        print("\n=== Analysis Results ===")
+        print(f"Haiku:\n{haiku}\n")
+        print(detector.get_detailed_report())
+        
+        if season:
+            print(f"\nThis haiku strongly suggests {season}.")
+            if season in ['spring', 'autumn']:
+                print("Traditional haiku often focus on these seasons.")
+        else:
+            print("\nNo clear seasonal theme detected.")
+            print("This may be a 'seasonless' (muki) haiku.")
+        
+        print("\nPress Enter to continue...")
+        
+    except Exception as e:
+        print(f"\nError during analysis: {str(e)}")
+        input("Press Enter to continue...")
 
   # Handle the extra second feature options (Option 6)
 
