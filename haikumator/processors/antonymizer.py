@@ -1,6 +1,6 @@
 import random
 from haiku import Haiku
-from processor import Processor
+from processors.processor import Processor
 
 # Antonymizer class: replaces words with antonyms (if available)
 class Antonymizer(Processor):

@@ -21,12 +21,12 @@ For each menu option, the application follows a similar workflow:
 
 # Import necessary modules
 from haiku import Haiku
-from thesaurus import Thesaurus
-from synonymizer import Synonymizer
-from zenizer import Zenizer
-from antonymizer import Antonymizer
-from batchProcessor import BatchProcessor
-from seasonDetector import SeasonDetector
+from processors.thesaurus import Thesaurus
+from processors.synonymizer import Synonymizer
+from processors.zenizer import Zenizer
+from processors.antonymizer import Antonymizer
+from processors.batchProcessor import BatchProcessor
+from processors.seasonDetector import SeasonDetector
 from utils import get_valid_input, validate_choice, validate_file_exists, get_haiku_input
 
 class HaikuGeneratorApp:
