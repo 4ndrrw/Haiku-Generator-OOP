@@ -7,6 +7,11 @@
 class Haiku:
   def __init__(self, line1="", line2="", line3=""):
     self._lines = [line1, line2, line3]
+
+  @property
+  def lines(self):
+    """Public property to access haiku lines"""
+    return self._lines
     
   @classmethod
   def from_file(cls, filename):

@@ -1,7 +1,7 @@
 import os
 from itertools import product
-from haiku import Haiku
-from processor import Processor
+from helpers.haiku import Haiku
+from processors.processor import Processor
 
 # BatchProcessor class: Create all possible alternatives of an existing haiku
 class BatchProcessor(Processor):

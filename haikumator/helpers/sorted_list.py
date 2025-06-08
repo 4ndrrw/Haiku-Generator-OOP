@@ -37,3 +37,8 @@ class SortedList:
     """Get shortest item (first item since sorted)"""
     # Return the first item if the list is not empty, else None
     return self._items[0] if self._items else None
+  
+  def get_longest(self):
+    """Get longest item (last item since sorted)"""
+    # Return the last item if the list is not empty, else None
+    return self._items[-1] if self._items else None

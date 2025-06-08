@@ -1,5 +1,5 @@
 import random
-from haiku import Haiku
+from helpers.haiku import Haiku
 from processors.processor import Processor
 
 # Synonymizer class to replace words in a Haiku with synonyms
